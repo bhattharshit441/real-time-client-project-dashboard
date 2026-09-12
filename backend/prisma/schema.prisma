@@ -1,0 +1,146 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  PM
+  DEVELOPER
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  IN_REVIEW
+  DONE
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role
+  createdAt    DateTime @default(now())
+
+  // Projects this user manages (only relevant for PM)
+  managedProjects Project[]      @relation("ProjectManager")
+  assignedTasks   Task[]         @relation("AssignedDeveloper")
+  activityLogs    TaskActivity[] @relation("ActivityActor")
+  notifications   Notification[] @relation("NotificationRecipient")
+  refreshTokens   RefreshToken[]
+
+  @@index([role])
+}
+
+// Refresh tokens are persisted so they can be revoked/rotated server-side
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  revoked   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Client {
+  id        String    @id @default(uuid())
+  name      String
+  createdAt DateTime  @default(now())
+  projects  Project[]
+}
+
+model Project {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  clientId    String
+  client      Client   @relation(fields: [clientId], references: [id])
+  managerId   String
+  manager     User     @relation("ProjectManager", fields: [managerId], references: [id])
+  createdAt   DateTime @default(now())
+
+  tasks      Task[]
+  activities TaskActivity[]
+
+  // PMs frequently query "my projects"; Admin filters by client
+  @@index([managerId])
+  @@index([clientId])
+}
+
+model Task {
+  id           String       @id @default(uuid())
+  projectId    String
+  project      Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title        String
+  description  String?
+  assigneeId   String?
+  assignee     User?        @relation("AssignedDeveloper", fields: [assigneeId], references: [id])
+  status       TaskStatus   @default(TODO)
+  priority     TaskPriority @default(MEDIUM)
+  dueDate      DateTime?
+  isOverdue    Boolean      @default(false)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  activities    TaskActivity[]
+  notifications Notification[]
+
+  // Developer dashboard: "my tasks sorted by priority/due date"
+  @@index([assigneeId])
+  // Filtering by status/priority is required by spec (query params)
+  @@index([status])
+  @@index([priority])
+  @@index([dueDate])
+  // Background overdue job scans non-done tasks past due date
+  @@index([status, dueDate])
+  @@index([projectId])
+}
+
+model TaskActivity {
+  id         String     @id @default(uuid())
+  taskId     String
+  task       Task       @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  projectId  String
+  project    Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  actorId    String
+  actor      User       @relation("ActivityActor", fields: [actorId], references: [id])
+  fromStatus TaskStatus?
+  toStatus   TaskStatus
+  message    String
+  createdAt  DateTime   @default(now())
+
+  // Feed queries: "last 20 events for project X ordered by time",
+  // and per-developer feed by task assignee (joined via task)
+  @@index([projectId, createdAt])
+  @@index([taskId, createdAt])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation("NotificationRecipient", fields: [userId], references: [id], onDelete: Cascade)
+  taskId    String?
+  task      Task?    @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  // Notification dropdown: "my unread notifications, newest first"
+  @@index([userId, read, createdAt])
+}

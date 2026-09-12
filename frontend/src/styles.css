@@ -1,0 +1,94 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #f4f5f7;
+  color: #1a1a1a;
+}
+.app-shell { min-height: 100vh; display: flex; flex-direction: column; }
+.topbar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 24px; background: #14171f; color: white;
+}
+.brand { color: white; text-decoration: none; font-weight: 700; font-size: 18px; }
+.topbar-right { display: flex; align-items: center; gap: 14px; }
+.role-pill { background: #3a3f52; padding: 3px 10px; border-radius: 999px; font-size: 12px; }
+.link-btn { background: none; border: none; color: #9fb3ff; cursor: pointer; font-size: 14px; }
+.content { padding: 24px; max-width: 1200px; margin: 0 auto; width: 100%; }
+
+.center-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+.center-msg { padding: 60px; text-align: center; color: #666; }
+
+.login-card {
+  background: white; padding: 32px; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  width: 340px; display: flex; flex-direction: column; gap: 6px;
+}
+.login-card label { font-size: 13px; margin-top: 8px; color: #555; }
+.login-card input {
+  padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;
+}
+.login-card button {
+  margin-top: 16px; padding: 10px; background: #2f6fed; color: white; border: none;
+  border-radius: 6px; cursor: pointer; font-size: 14px;
+}
+.seed-hint { margin-top: 16px; font-size: 12px; color: #888; line-height: 1.5; }
+.error-text { color: #d33; font-size: 13px; margin-top: 8px; }
+.muted { color: #888; font-size: 13px; }
+
+.dashboard-grid { display: flex; flex-direction: column; gap: 20px; }
+.stat-row { display: flex; gap: 14px; flex-wrap: wrap; }
+.stat-card {
+  background: white; border-radius: 10px; padding: 16px 20px; min-width: 130px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+.stat-value { font-size: 26px; font-weight: 700; }
+.stat-label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.03em; }
+
+.two-col { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; }
+@media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+
+.panel {
+  background: white; border-radius: 10px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+.panel h2 { margin-top: 0; font-size: 16px; }
+
+.project-list, .task-list { list-style: none; padding: 0; margin: 0; }
+.project-list li, .task-list li { padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
+.project-list a { color: #2f6fed; text-decoration: none; font-weight: 600; }
+
+.task-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.task-table th { text-align: left; color: #888; font-weight: 600; padding: 6px 8px; border-bottom: 1px solid #eee; }
+.task-table td { padding: 8px; border-bottom: 1px solid #f4f4f4; }
+.overdue-row { background: #fff5f5; }
+.overdue-tag { margin-left: 6px; background: #ffe1e1; color: #c0392b; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
+
+.badge-pill { padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+.badge-status-todo { background: #eee; color: #555; }
+.badge-status-progress { background: #e3edff; color: #2f6fed; }
+.badge-status-review { background: #fff3cd; color: #9a7d0a; }
+.badge-status-done { background: #e0f7e9; color: #227a4c; }
+.badge-priority-low { background: #eee; color: #666; }
+.badge-priority-medium { background: #e3edff; color: #2f6fed; }
+.badge-priority-high { background: #ffe8d1; color: #b25e00; }
+.badge-priority-critical { background: #ffe1e1; color: #c0392b; }
+
+.filters-row { display: flex; gap: 10px; margin-bottom: 12px; }
+.filters-row select { padding: 6px 8px; border-radius: 6px; border: 1px solid #ddd; }
+
+.activity-feed { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; max-height: 480px; overflow-y: auto; }
+.activity-item { display: flex; flex-direction: column; gap: 2px; padding-bottom: 8px; border-bottom: 1px solid #f4f4f4; font-size: 13px; }
+.activity-time { color: #999; font-size: 11px; }
+.empty-state { color: #999; font-size: 13px; }
+
+.icon-btn { position: relative; background: none; border: none; font-size: 18px; cursor: pointer; color: white; }
+.badge { position: absolute; top: -4px; right: -8px; background: #e63946; color: white; border-radius: 999px; font-size: 10px; padding: 1px 5px; }
+.notif-wrapper { position: relative; }
+.notif-dropdown {
+  position: absolute; right: 0; top: 30px; width: 320px; background: white; color: #1a1a1a;
+  border-radius: 10px; box-shadow: 0 8px 30px rgba(0,0,0,0.2); max-height: 400px; overflow-y: auto; z-index: 10;
+}
+.notif-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px solid #eee; }
+.notif-item { padding: 10px 14px; border-bottom: 1px solid #f4f4f4; cursor: pointer; font-size: 13px; }
+.notif-item.unread { background: #f0f5ff; }
+.notif-time { font-size: 11px; color: #999; margin-top: 3px; }
+.notif-empty { padding: 20px; text-align: center; color: #999; font-size: 13px; }
